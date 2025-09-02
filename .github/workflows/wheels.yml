@@ -71,6 +71,7 @@ jobs:
       - name: Build Python wheel
         run: |
           cd build/python
+          python -m pip install --user --upgrade build
           python -m build --wheel
 
       - uses: actions/upload-artifact@v4
