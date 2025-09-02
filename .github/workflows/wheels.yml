@@ -38,13 +38,25 @@ jobs:
           echo "CMake and MSVC installed"
 
       - name: Install HDF5
+        if: matrix.os == 'windows-latest'
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh || ./vcpkg/bootstrap-vcpkg.bat
           ./vcpkg/vcpkg install hdf5
         shell: bash
 
-      - name: Configure CMake project
+      - name: Configure CMake project (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 
+        shell: bash
+
+      - name: Configure CMake project (windows)
+        if: matrix.os == 'windows-latest'
         run: |
           mkdir build
           cd build
@@ -57,7 +69,7 @@ jobs:
       - name: Build C++ code with CMake
         run: |
           cd build
-          cmake --build . --config Release -- -j2
+          cmake --build . --config Release
         shell: bash
 
       - name: Build Python wheel
