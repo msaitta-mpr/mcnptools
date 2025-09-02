@@ -72,7 +72,8 @@ jobs:
         run: |
           cd build/python
           python -m pip install --user --upgrade build
-          python -m build --wheel
+          ls
+          python -m build --wheel SetupRelease.py
 
       - uses: actions/upload-artifact@v4
         with:
