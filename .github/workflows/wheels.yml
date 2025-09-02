@@ -37,22 +37,21 @@ jobs:
           # CMake and MSVC are available on GitHub-hosted runners; ensure paths are correct
           echo "CMake and MSVC installed"
 
-      - name: Install HDF5 (windows)
-        if: matrix.os == 'windows-latest'
+      - name: Install HDF5
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh || ./vcpkg/bootstrap-vcpkg.bat
           ./vcpkg/vcpkg install hdf5
         shell: bash
 
-      # - name: Install cibuildwheel
-      #   run: python -m pip install cibuildwheel==3.1.4
-
       - name: Configure CMake project
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake
         shell: bash
 
       - name: Build C++ code with CMake
@@ -60,13 +59,6 @@ jobs:
           cd build
           cmake --build . --config Release -- -j2
         shell: bash
-
-      # - name: Build wheels
-      #   run: python -m cibuildwheel --output-dir wheelhouse
-      #   # to supply options, put them in 'env', like:
-      #   # env:
-      #   #   CIBW_SOME_OPTION: value
-      #   #   ...
 
       - name: Build Python wheel
         run: |
