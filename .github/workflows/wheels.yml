@@ -8,8 +8,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        # python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+
 
     steps:
       - name: Checkout code
@@ -25,7 +28,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install -y cmake g++ build-essential hdf5
+          sudo apt install -y cmake g++ build-essential libhdf5-dev
 
       - name: Install build tools (Windows)
         if: matrix.os == 'windows-latest'
