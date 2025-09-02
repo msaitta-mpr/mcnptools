@@ -71,9 +71,9 @@ jobs:
       - name: Build Python wheel
         run: |
           cd build/python
-          python -m pip install --user --upgrade build
+          python -m pip install --user --upgrade build wheel setuptools 
           ls
-          python -m build --wheel SetupRelease.py
+          python setupRelease.py bdist_wheel
 
       - uses: actions/upload-artifact@v4
         with:
