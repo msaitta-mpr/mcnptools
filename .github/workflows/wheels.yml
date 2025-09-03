@@ -60,10 +60,13 @@ jobs:
         run: |
           mkdir build
           cd build
+          ls ../vcpkg
+          tree ../vcpkg
           cmake .. `
             -DCMAKE_BUILD_TYPE=Release `
             -D CMAKE_POLICY_VERSION_MINIMUM="3.5" `
-            -D CMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+            -D CMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake `
+            -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE=""
         shell: pwsh
 
       - name: Build C++ code with CMake
