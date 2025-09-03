@@ -37,7 +37,7 @@ jobs:
           # CMake and MSVC are available on GitHub-hosted runners; ensure paths are correct
           echo "CMake and MSVC installed"
 
-      - name: Install HDF5
+      - name: Install HDF5 (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           git clone https://github.com/microsoft/vcpkg.git
@@ -55,15 +55,15 @@ jobs:
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 
         shell: bash
 
-      - name: Configure CMake project (windows)
+      - name: Configure CMake project (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           mkdir build
           cd build
           cmake .. `
             -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 `
-            -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+            -D CMAKE_POLICY_VERSION_MINIMUM="3.5" `
+            -D CMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
         shell: pwsh
 
       - name: Build C++ code with CMake
