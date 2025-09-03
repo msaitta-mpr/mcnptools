@@ -65,8 +65,7 @@ jobs:
           cmake .. `
             -DCMAKE_BUILD_TYPE=Release `
             -D CMAKE_POLICY_VERSION_MINIMUM="3.5" `
-            -D CMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake `
-            -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE=""
+            -D HDF5_ROOT=${{ github.workspace }}/vcpkg/installed/x64-windows
         shell: pwsh
 
       - name: Build C++ code with CMake
