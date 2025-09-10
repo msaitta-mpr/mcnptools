@@ -49,6 +49,7 @@ jobs:
           cd build
           cmake .. \
             -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 
         shell: bash
 
@@ -62,6 +63,7 @@ jobs:
           cmake .. `
             -DCMAKE_BUILD_TYPE=Release `
             -D CMAKE_POLICY_VERSION_MINIMUM="3.5" `
+            -DBUILD_SHARED_LIBS=OFF `
             -D HDF5_ROOT=${{ github.workspace }}/vcpkg/installed/x64-windows
         shell: pwsh
 
