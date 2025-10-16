@@ -1,0 +1,86 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install build tools (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake g++ build-essential libhdf5-dev
+
+      - name: Install build tools (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' --yes
+          # CMake and MSVC are available on GitHub-hosted runners; ensure paths are correct
+          echo "CMake and MSVC installed"
+
+      - name: Install HDF5 (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh || ./vcpkg/bootstrap-vcpkg.bat
+          ./vcpkg/vcpkg install hdf5
+        shell: bash
+
+      - name: Configure CMake project (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 
+        shell: bash
+
+      - name: Configure CMake project (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir build
+          cd build
+          ls ../vcpkg
+          tree ../vcpkg
+          cmake .. `
+            -DCMAKE_BUILD_TYPE=Release `
+            -D CMAKE_POLICY_VERSION_MINIMUM="3.5" `
+            -DBUILD_SHARED_LIBS=OFF `
+            -D HDF5_ROOT=${{ github.workspace }}/vcpkg/installed/x64-windows
+        shell: pwsh
+
+      - name: Build C++ code with CMake
+        run: |
+          cd build
+          cmake --build . --config Release
+        shell: bash
+
+      - name: Build Python wheel
+        run: |
+          cd build/python
+          python -m pip install --user --upgrade build wheel setuptools 
+          ls
+          python setupRelease.py bdist_wheel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.python-version }}
+          path: ./build/python/dist/*.whl
